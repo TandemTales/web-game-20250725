@@ -3,55 +3,63 @@
     <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>AI Game of the Day</title>
+            <title>Bot Built Arcade</title>
         <style>
                     body {
-                                    font-family: Arial, sans-serif;
-                                    background-color: #f7f7f7;
+                                    font-family: 'Arial', sans-serif;
+                                    background: linear-gradient(135deg, #ff0066 0%, #6600ff 100%);
                                     padding: 40px;
                                     text-align: center;
+                                    color: #fff;
                     }
                     #container {
-                                    background: #fff;
+                                    background: rgba(0, 0, 0, 0.7);
                                     max-width: 600px;
                                     margin: 0 auto;
                                     padding: 30px;
                                     border-radius: 10px;
-                                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                                    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
                     }
                     h1 {
                                     margin-bottom: 30px;
-                                    color: #333;
+                                    color: #fffd8d;
+                                    font-family: 'Courier New', monospace;
+                                    text-shadow: 2px 2px 6px #000;
                     }
                     .featured {
-                                    background: #e0f7fa;
+                                    background: rgba(255, 255, 255, 0.1);
                                     padding: 20px;
                                     border-radius: 8px;
                                     margin-bottom: 30px;
+                                    box-shadow: 0 0 10px rgba(255,255,255,0.3);
                     }
                     .featured h2 {
                                     margin-top: 0;
-                                    color: #006064;
+                                    color: #ff80ff;
+                                    text-shadow: 1px 1px 4px #000;
                     }
                     .featured p {
                                     margin: 10px 0 20px;
-                                    color: #004d40;
+                                    color: #fff;
                     }
                     .play-btn {
                                     display: inline-block;
                                     padding: 10px 20px;
-                                    background-color: #00796b;
-                                    color: #fff;
+                                    background-color: #00e5ff;
+                                    color: #000;
                                     text-decoration: none;
                                     border-radius: 5px;
                                     font-size: 16px;
+                                    box-shadow: 0 0 8px #00e5ff;
                     }
                     .play-btn:hover {
-                                    background-color: #004d40;
+                                    background-color: #1affff;
+                                    box-shadow: 0 0 12px #1affff;
                     }
                     h2 {
                                     margin-top: 40px;
-                                    color: #333;
+                                    color: #fffd8d;
+                                    text-shadow: 1px 1px 4px #000;
                     }
                     ul {
                                     list-style: none;
@@ -62,20 +70,22 @@
                     }
                     li a {
                                     font-size: 18px;
-                                    color: #336cc;
+                                    color: #ff80ff;
                                     text-decoration: none;
+                                    text-shadow: 1px 1px 3px #000;
                     }
                     li a:hover {
                                     text-decoration: underline;
+                                    color: #ffff99;
                     }
                 </style>
     </head>
     <body>
             <div id="container">
-                        <h1>AI Game of the Day</h1>
+                        <h1>Bot Built Arcade</h1>
                     
                     <div class="featured">
-                                <h2>Today's Featured Game: 3D Tetris</h2>
+                                <h2>Featured Game: 3D Tetris</h2>
                                 <p>Experience the classic puzzle game in stunning 3D! Stack blocks, clear lines, and challenge yourself in this immersive three-dimensional Tetris adventure!</p>
                                 <a href="tetris_3d.html" class="play-btn">Play Now!</a>
                     </div>
