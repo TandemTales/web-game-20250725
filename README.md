@@ -16,6 +16,7 @@ This site hosts several small HTML games and can optionally collect star ratings
 4. Create the table:
    ```bash
    wrangler d1 execute gameday_ratings --command "CREATE TABLE IF NOT EXISTS ratings (id INTEGER PRIMARY KEY AUTOINCREMENT, game_id TEXT NOT NULL, stars INTEGER NOT NULL CHECK(stars BETWEEN 1 AND 5), ip TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+   wrangler d1 execute gameday_ratings --command "CREATE UNIQUE INDEX IF NOT EXISTS rating_per_ip ON ratings(game_id, ip);"
    ```
 5. Start the development server:
    ```bash
