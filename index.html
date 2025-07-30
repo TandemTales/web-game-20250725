@@ -199,8 +199,8 @@
     </div>
     <script>
         document.querySelectorAll('.rate').forEach(rateEl => {
-            const gameId = rateEl.dataset.id;
             const li = rateEl.closest('li') || rateEl.parentElement;
+            const gameId = rateEl.dataset.id || li.dataset.id;
             const scoreEl = li.querySelector('.score');
             rateEl.querySelectorAll('span').forEach(span => {
                 span.addEventListener('click', async () => {
@@ -209,9 +209,6 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ gameId, stars: +span.dataset.star })
                     });
-                    if (res.status === 409) {
-                        alert('You already rated this game.');
-                    }
                     load(gameId, rateEl, scoreEl);
                 });
             });
