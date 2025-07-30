@@ -7,6 +7,15 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
 
   const ip = request.headers.get("CF-Connecting-IP") ?? "0.0.0.0";
 
+  const existing = await env.DB
+    .prepare("SELECT 1 FROM ratings WHERE game_id = ?1 AND ip = ?2;")
+    .bind(gameId, ip)
+    .first();
+
+  if (existing) {
+    return new Response("Already rated", { status: 409 });
+  }
+
   await env.DB
     .prepare("INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3);")
     .bind(gameId, stars, ip)
