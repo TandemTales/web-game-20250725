@@ -78,6 +78,16 @@
             text-decoration: underline;
             color: #ffffff;
         }
+        .rate span {
+            cursor: pointer;
+            color: gold;
+        }
+        .rate span.selected {
+            color: orange;
+        }
+        .score {
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -88,6 +98,14 @@
             <h2>Featured Game: 🧩 Physics Puzzle Platformer</h2>
             <p>Navigate through challenging levels using realistic physics! Collect gems, jump on moving platforms, and solve puzzles to reach the exit portal. A brain-teasing adventure awaits!</p>
             <a href="physics_puzzle.html" class="play-btn">Play Now!</a>
+            <div class="rate" data-id="physics-puzzle">
+                <span data-star="1">★</span>
+                <span data-star="2">★</span>
+                <span data-star="3">★</span>
+                <span data-star="4">★</span>
+                <span data-star="5">★</span>
+            </div>
+            <span class="score"></span>
         </div>
         
         <!-- Advertisement -->
@@ -106,16 +124,108 @@
         </div>
         
         <h2>More Games</h2>
-        <ul>
-            <li><a href="snake_game.html">Snake Game</a></li>
-            <li><a href="tetris_3d.html">3D Tetris</a></li>
-            <li><a href="space_shooter.html">Space Shooter</a></li>
-            <li><a href="word_scramble.html">Word Scramble Adventure</a></li>
-            <li><a href="memory_match.html">Memory Match Game</a></li>
-            <li><a href="number_guessing.html">Number Guessing Game</a></li>
-            <li><a href="rock_paper_scissors.html">Rock Paper Scissors</a></li>
+        <ul id="games">
+            <li data-id="snake-game"><a href="snake_game.html">Snake Game</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
+            <li data-id="tetris-3d"><a href="tetris_3d.html">3D Tetris</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
+            <li data-id="space-shooter"><a href="space_shooter.html">Space Shooter</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
+            <li data-id="word-scramble"><a href="word_scramble.html">Word Scramble Adventure</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
+            <li data-id="memory-match"><a href="memory_match.html">Memory Match Game</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
+            <li data-id="number-guessing"><a href="number_guessing.html">Number Guessing Game</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
+            <li data-id="rock-paper-scissors"><a href="rock_paper_scissors.html">Rock Paper Scissors</a>
+                <div class="rate">
+                    <span data-star="1">★</span>
+                    <span data-star="2">★</span>
+                    <span data-star="3">★</span>
+                    <span data-star="4">★</span>
+                    <span data-star="5">★</span>
+                </div>
+                <span class="score"></span>
+            </li>
         </ul>
     </div>
+    <script>
+        document.querySelectorAll('.rate').forEach(rateEl => {
+            const gameId = rateEl.dataset.id;
+            const li = rateEl.closest('li') || rateEl.parentElement;
+            const scoreEl = li.querySelector('.score');
+            rateEl.querySelectorAll('span').forEach(span => {
+                span.addEventListener('click', async () => {
+                    const res = await fetch('/api/rate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ gameId, stars: +span.dataset.star })
+                    });
+                    if (res.status === 409) {
+                        alert('You already rated this game.');
+                    }
+                    load(gameId, rateEl, scoreEl);
+                });
+            });
+            load(gameId, rateEl, scoreEl);
+        });
+
+        async function load(gameId, rateEl, scoreEl) {
+            const r = await fetch(`/api/ratings/${gameId}`).then(r => r.json());
+            scoreEl.textContent = `${r.average} ★ from ${r.votes} votes` + (r.mine ? ` - You rated ${r.mine}` : '');
+            rateEl.querySelectorAll('span').forEach(span => {
+                span.classList.toggle('selected', r.mine && +span.dataset.star <= r.mine);
+            });
+        }
+    </script>
 </body>
 </html>
 

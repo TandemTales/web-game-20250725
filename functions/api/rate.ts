@@ -8,23 +8,18 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
   const ip = request.headers.get("CF-Connecting-IP") ?? "0.0.0.0";
 
   const existing = await env.DB
-    .prepare(
-      "SELECT id FROM ratings WHERE game_id = ?1 AND ip = ?2 LIMIT 1;"
-    )
+    .prepare("SELECT 1 FROM ratings WHERE game_id = ?1 AND ip = ?2;")
     .bind(gameId, ip)
-    .first<{ id: number }>();
+    .first();
 
   if (existing) {
-    await env.DB
-      .prepare("UPDATE ratings SET stars = ?1 WHERE id = ?2;")
-      .bind(stars, existing.id)
-      .run();
-  } else {
-    await env.DB
-      .prepare("INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3);")
-      .bind(gameId, stars, ip)
-      .run();
+    return new Response("Already rated", { status: 409 });
   }
+
+  await env.DB
+    .prepare("INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3);")
+    .bind(gameId, stars, ip)
+    .run();
 
   const { count, avg } = await env.DB
     .prepare("SELECT COUNT(*) count, AVG(stars) avg FROM ratings WHERE game_id = ?1;")
