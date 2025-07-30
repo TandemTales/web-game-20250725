@@ -1,0 +1,8 @@
+name = "ai-game-of-the-day"
+compatibility_date = "2025-07-28"
+pages_build_output_dir = "./"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gameday_ratings"
+database_id = "f7771fde-35d7-49c1-ac5a-2a379c27f0f6"

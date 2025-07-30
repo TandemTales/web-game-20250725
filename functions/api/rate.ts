@@ -1,0 +1,21 @@
+export const onRequestPost: PagesFunction = async ({ request, env }) => {
+  const { gameId, stars } = await request.json<any>();
+
+  if (!gameId || !Number.isInteger(stars) || stars < 1 || stars > 5) {
+    return new Response("Bad request", { status: 400 });
+  }
+
+  const ip = request.headers.get("CF-Connecting-IP") ?? "0.0.0.0";
+
+  await env.DB
+    .prepare("INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3);")
+    .bind(gameId, stars, ip)
+    .run();
+
+  const { count, avg } = await env.DB
+    .prepare("SELECT COUNT(*) count, AVG(stars) avg FROM ratings WHERE game_id = ?1;")
+    .bind(gameId)
+    .first() as { count: number; avg: number };
+
+  return Response.json({ votes: count, average: Number(avg).toFixed(2) });
+};
