@@ -244,23 +244,37 @@
             const scoreEl = li.querySelector('.score');
             rateEl.querySelectorAll('span').forEach(span => {
                 span.addEventListener('click', async () => {
-                    const res = await fetch('/api/rate', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ gameId, stars: parseInt(span.dataset.star) })
+                    const rating = parseInt(span.dataset.star);
+                    // highlight immediately
+                    rateEl.querySelectorAll('span').forEach(s => {
+                        s.classList.toggle('selected', +s.dataset.star <= rating);
                     });
-                    load(gameId, rateEl, scoreEl);
+                    scoreEl.textContent = `You rated ${rating} ★`;
+                    try {
+                        await fetch('/api/rate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ gameId, stars: rating })
+                        });
+                        await load(gameId, rateEl, scoreEl);
+                    } catch (err) {
+                        console.error('Rating failed', err);
+                    }
                 });
             });
-            load(gameId, rateEl, scoreEl);
+            load(gameId, rateEl, scoreEl).catch(err => console.error(err));
         });
 
         async function load(gameId, rateEl, scoreEl) {
-            const r = await fetch(`/api/ratings/${gameId}`).then(r => r.json());
-            scoreEl.textContent = `${r.average} ★ from ${r.votes} votes` + (r.mine ? ` - You rated ${r.mine}` : '');
-            rateEl.querySelectorAll('span').forEach(span => {
-                span.classList.toggle('selected', r.mine && +span.dataset.star <= r.mine);
-            });
+            try {
+                const r = await fetch(`/api/ratings/${gameId}`).then(r => r.json());
+                scoreEl.textContent = `${r.average} ★ from ${r.votes} votes` + (r.mine ? ` - You rated ${r.mine}` : '');
+                rateEl.querySelectorAll('span').forEach(span => {
+                    span.classList.toggle('selected', r.mine && +span.dataset.star <= r.mine);
+                });
+            } catch (err) {
+                console.error('Failed to load rating', err);
+            }
         }
     </script>
 </body>
