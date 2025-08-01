@@ -251,7 +251,7 @@
                     });
                     scoreEl.textContent = `You rated ${rating} ★`;
                     try {
-                        await fetch('/api/rate', {
+                        await fetch('api/rate', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ gameId, stars: rating })
@@ -267,7 +267,7 @@
 
         async function load(gameId, rateEl, scoreEl) {
             try {
-                const r = await fetch(`/api/ratings/${gameId}`).then(r => r.json());
+                const r = await fetch(`api/ratings/${encodeURIComponent(gameId)}`).then(r => r.json());
                 scoreEl.textContent = `${r.average} ★ from ${r.votes} votes` + (r.mine ? ` - You rated ${r.mine}` : '');
                 rateEl.querySelectorAll('span').forEach(span => {
                     span.classList.toggle('selected', r.mine && +span.dataset.star <= r.mine);
