@@ -1,24 +1,21 @@
-export const onRequestPost: PagesFunction = async ({ request, env }) => {
-  const { gameId, stars } = await request.json<any>();
+type PagesFunction = any;
 
-  if (!gameId || !Number.isInteger(stars) || stars < 1 || stars > 5) {
+export const onRequestPost: PagesFunction = async ({ request, env }) => {
+  const { gameId, stars } = await request.json() as any;
+  const rating = parseInt(stars, 10);
+
+  if (!gameId || isNaN(rating) || rating < 1 || rating > 5) {
     return new Response("Bad request", { status: 400 });
   }
 
   const ip = request.headers.get("CF-Connecting-IP") ?? "0.0.0.0";
 
-  const existing = await env.DB
-    .prepare("SELECT 1 FROM ratings WHERE game_id = ?1 AND ip = ?2;")
-    .bind(gameId, ip)
-    .first();
-
-  if (existing) {
-    return new Response("Already rated", { status: 409 });
-  }
-
   await env.DB
-    .prepare("INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3);")
-    .bind(gameId, stars, ip)
+    .prepare(
+      "INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3) " +
+        "ON CONFLICT(game_id, ip) DO UPDATE SET stars = excluded.stars;"
+    )
+    .bind(gameId, rating, ip)
     .run();
 
   const { count, avg } = await env.DB

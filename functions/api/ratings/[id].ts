@@ -1,3 +1,5 @@
+type PagesFunction = any;
+
 export const onRequestGet: PagesFunction = async ({ params, env, request }) => {
   const gameId = params!.id as string;
 
@@ -8,10 +10,10 @@ export const onRequestGet: PagesFunction = async ({ params, env, request }) => {
     .bind(gameId)
     .first() as { count: number; avg: number };
 
-  const mineRow = await env.DB
+  const mineRow = (await env.DB
     .prepare("SELECT stars FROM ratings WHERE game_id = ?1 AND ip = ?2;")
     .bind(gameId, ip)
-    .first<{ stars: number }>();
+    .first()) as { stars?: number } | null;
 
   return Response.json({
     votes: count ?? 0,

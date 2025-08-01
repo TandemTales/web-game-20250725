@@ -132,6 +132,13 @@
                 font-size: 2em;
             }
         }
+        #rate {
+            margin-top: 10px;
+            font-size: 24px;
+        }
+        #rate span.selected {
+            color: orange;
+        }
     </style>
 </head>
 <body>
@@ -567,7 +574,7 @@ document.querySelectorAll('#rate span').forEach(el =>
     await fetch('/api/rate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gameId, stars: +el.dataset.star })
+      body: JSON.stringify({ gameId, stars: parseInt(el.dataset.star) })
     });
     load();
   });
@@ -575,7 +582,10 @@ document.querySelectorAll('#rate span').forEach(el =>
 async function load() {
   const r = await fetch(`/api/ratings/${gameId}`).then(r => r.json());
   document.getElementById('score').textContent =
-    `${r.average} ★ from ${r.votes} votes`;
+    `${r.average} ★ from ${r.votes} votes` + (r.mine ? ` - You rated ${r.mine}` : '');
+  document.querySelectorAll('#rate span').forEach(span => {
+    span.classList.toggle('selected', r.mine && +span.dataset.star <= r.mine);
+  });
 }
 load();
 </script>
