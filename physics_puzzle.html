@@ -574,7 +574,7 @@ document.querySelectorAll('#rate span').forEach(el =>
     await fetch('/api/rate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gameId, stars: +el.dataset.star })
+      body: JSON.stringify({ gameId, stars: parseInt(el.dataset.star) })
     });
     load();
   });

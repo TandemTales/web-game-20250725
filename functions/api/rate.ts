@@ -1,7 +1,10 @@
-export const onRequestPost: PagesFunction = async ({ request, env }) => {
-  const { gameId, stars } = await request.json<any>();
+type PagesFunction = any;
 
-  if (!gameId || !Number.isInteger(stars) || stars < 1 || stars > 5) {
+export const onRequestPost: PagesFunction = async ({ request, env }) => {
+  const { gameId, stars } = await request.json() as any;
+  const rating = parseInt(stars, 10);
+
+  if (!gameId || isNaN(rating) || rating < 1 || rating > 5) {
     return new Response("Bad request", { status: 400 });
   }
 
@@ -12,7 +15,7 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
       "INSERT INTO ratings (game_id, stars, ip) VALUES (?1, ?2, ?3) " +
         "ON CONFLICT(game_id, ip) DO UPDATE SET stars = excluded.stars;"
     )
-    .bind(gameId, stars, ip)
+    .bind(gameId, rating, ip)
     .run();
 
   const { count, avg } = await env.DB

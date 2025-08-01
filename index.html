@@ -247,7 +247,7 @@
                     const res = await fetch('/api/rate', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ gameId, stars: +span.dataset.star })
+                        body: JSON.stringify({ gameId, stars: parseInt(span.dataset.star) })
                     });
                     load(gameId, rateEl, scoreEl);
                 });
