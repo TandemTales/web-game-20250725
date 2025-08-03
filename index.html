@@ -1,298 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Bot Built Arcade</title>
-	<style>
-		body {
-			font-family: 'Arial', sans-serif;
-			background: linear-gradient(135deg, #ff6060 0%, #6600ff 100%);
-			padding: 40px;
-			text-align: center;
-			color: #fff;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Built Arcade</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6080 0%, #6600ff 100%);
+            padding: 40px;
+            text-align: center;
+            color: #fff;
+        }
 
-		#container {
-			background: rgba(0, 0, 0, 0.7);
-			max-width: 600px;
-			margin: 0 auto;
-			padding: 30px;
-			border-radius: 10px;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-		}
+        #container {
+            background: rgba(0, 0, 0, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
 
-		h1 {
-			margin-bottom: 30px;
-			color: #fff80d;
-			font-family: 'Courier New', monospace;
-			text-shadow: 2px 2px 6px #000;
-		}
+        h1 {
+            margin-bottom: 30px;
+            color: #fff80d;
+            font-family: 'Courier New', monospace;
+            text-shadow: 2px 2px 6px #000;
+        }
 
-		.featured {
-			background: rgba(255, 255, 255, 0.1);
-			padding: 20px;
-			border-radius: 8px;
-			margin-bottom: 30px;
-			box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-		}
+        .featured {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
 
-		.featured h2 {
-			margin-top: 0;
-			color: #fff80d;
-			text-shadow: 1px 1px 4px #000;
-		}
+        .featured h2 {
+            margin-top: 0;
+            color: #fff80d;
+            text-shadow: 1px 1px 4px #000;
+        }
 
-		.featured p {
-			margin: 10px 0 20px;
-			color: #fff;
-		}
+        .featured p {
+            margin: 10px 0 20px;
+            color: #fff;
+        }
 
-		.play-btn {
-			display: inline-block;
-			padding: 10px 20px;
-			background-color: #00e5ff;
-			color: #000;
-			text-decoration: none;
-			border-radius: 5px;
-			font-size: 16px;
-			box-shadow: 0 0 8px #00e5ff;
-		}
+        .play-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00e5ff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 0 0 8px #00e5ff;
+        }
 
-		.play-btn:hover {
-			background-color: #1affff;
-			box-shadow: 0 0 12px #1affff;
-		}
+        .play-btn:hover {
+            background-color: #00c2e0;
+        }
 
-		h2 {
-			margin-top: 40px;
-			color: #fff80d;
-			text-shadow: 1px 1px 4px #000;
-		}
+        .more-games {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
-		ul {
-			list-style: none;
-			padding: 0;
-		}
+        .more-games h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
 
-		li {
-			margin: 12px 0;
-		}
+        .game-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
 
-		li a {
-			font-size: 18px;
-			color: #fff8ff;
-			text-decoration: underline;
-			color: #ffffff;
-		}
+        .game-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            width: 180px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
 
-		li a:hover {
-			text-decoration: underline;
-			color: #ffffff;
-		}
+        .game-item h3 {
+            margin-top: 0;
+            color: #fff;
+            font-size: 18px;
+        }
 
-		.rate span {
-			cursor: pointer;
-			color: gold;
-		}
+        .game-item p {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
 
-		.rate span.selected {
-			color: orange;
-		}
+        .game-item .play-btn {
+            font-size: 14px;
+            padding: 8px 15px;
+        }
 
-		.score {
-			margin-left: 8px;
-		}
-	</style>
+        .rating-container {
+            margin-top: 10px;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .star.selected {
+            color: gold;
+        }
+
+        .rating-message {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #fff;
+        }
+    </style>
 </head>
-
 <body>
-	<div id="container">
-		<h1>Bot Built Arcade</h1>
+    <div id="container">
+        <h1>AI Game of the Day</h1>
 
-		<div class="featured">
-			<h2>Featured Game: 🎮 Pixel Adventure</h2>
-			<p>Jump through a colorful 2D platformer world! Collect golden coins while avoiding dangerous enemies. Use
-				arrow keys or WASD to move and spacebar to jump. Beautiful pixel art graphics with smooth animations and
-				particle effects. Can you collect all the coins and survive?</p>
-			<a href="pixel_adventure.html" class="play-btn">Play Now!</a>
-			<div class="rate" data-id="pixel-adventure">
-				<span data-star="1">★</span>
-				<span data-star="2">★</span>
-				<span data-star="3">★</span>
-				<span data-star="4">★</span>
-				<span data-star="5">★</span>
-			</div>
-			<span class="score"></span>
-		</div>
+        <div class="featured">
+            <h2>Featured Game: 3D Maze Runner</h2>
+            <p>Navigate through challenging 3D mazes using realistic first-person perspective! Collect gems and find the exit in this immersive WebGL experience.</p>
+            <a href="maze_runner_3d.html" class="play-btn">Play Now</a>
+            <div class="rating-container">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+                <div class="rating-message"></div>
+            </div>
+        </div>
 
-		<!-- Advertisement -->
-		<div class="ad-container" style="margin: 20px 0;">
-			<script async
-				src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000"
-				crossorigin="anonymous"></script>
-			<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-0000000000000000"
-				data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
-			<script>
-				(adsbygoogle = window.adsbygoogle || []).push({});
-			</script>
-		</div>
+        <div class="more-games">
+            <h2>More Games</h2>
+            <div class="game-list">
+                <div class="game-item">
+                    <h3>3D Maze Runner</h3>
+                    <p>Navigate through challenging 3D mazes!</p>
+                    <a href="maze_runner_3d.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Bubble Pop Puzzle</h3>
+                    <p>Match and pop colorful bubbles!</p>
+                    <a href="bubble_pop_puzzle.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Color Match Puzzle</h3>
+                    <p>Can you match all the colors?</p>
+                    <a href="color_match_puzzle.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Crystal Quest</h3>
+                    <p>Embark on an epic gem-matching adventure!</p>
+                    <a href="crystal_quest.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Memory Match</h3>
+                    <p>Test your memory skills!</p>
+                    <a href="memory_match.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Number Guessing</h3>
+                    <p>Guess the secret number!</p>
+                    <a href="number_guessing.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Physics Puzzle</h3>
+                    <p>Solve puzzles with realistic physics!</p>
+                    <a href="physics_puzzle.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Pixel Adventure</h3>
+                    <p>A retro 2D platformer adventure!</p>
+                    <a href="pixel_adventure.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Rock Paper Scissors</h3>
+                    <p>The classic hand game!</p>
+                    <a href="rock_paper_scissors.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Snake Game</h3>
+                    <p>Grow your snake and avoid obstacles!</p>
+                    <a href="snake_game.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Space Shooter</h3>
+                    <p>Blast aliens in this arcade classic!</p>
+                    <a href="space_shooter.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Tetris 3D</h3>
+                    <p>Experience Tetris in a new dimension!</p>
+                    <a href="tetris_3d.html" class="play-btn">Play</a>
+                </div>
+                <div class="game-item">
+                    <h3>Word Scramble</h3>
+                    <p>Unscramble the letters to find the word!</p>
+                    <a href="word_scramble.html" class="play-btn">Play</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-		<h2>More Games</h2>
-		<ul id="games">
-			<li data-id="bubble-pop-puzzle"><a href="bubble_pop_puzzle.html">Bubble Pop Puzzle</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="crystal-quest"><a href="crystal_quest.html">Crystal Quest Adventure</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="color-match-puzzle"><a href="color_match_puzzle.html">Color Match Puzzle</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="physics-puzzle"><a href="physics_puzzle.html">Physics Puzzle Platformer</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="snake-game"><a href="snake_game.html">Snake Game</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="tetris-3d"><a href="tetris_3d.html">3D Tetris</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="space-shooter"><a href="space_shooter.html">Space Shooter</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="word-scramble"><a href="word_scramble.html">Word Scramble Adventure</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="memory-match"><a href="memory_match.html">Memory Match Game</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="number-guessing"><a href="number_guessing.html">Number Guessing Game</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-			<li data-id="rock-paper-scissors"><a href="rock_paper_scissors.html">Rock Paper Scissors</a>
-				<div class="rate">
-					<span data-star="1">★</span>
-					<span data-star="2">★</span>
-					<span data-star="3">★</span>
-					<span data-star="4">★</span>
-					<span data-star="5">★</span>
-				</div>
-				<span class="score"></span>
-			</li>
-		</ul>
-	</div>
-	<script>
-		document.querySelectorAll('.rate').forEach(rateEl => {
-			const li = rateEl.closest('li') || rateEl.parentElement;
-			const gameId = rateEl.dataset.id || li.dataset.id;
-			const scoreEl = li.querySelector('.score');
-			rateEl.querySelectorAll('span').forEach(span => {
-				span.addEventListener('click', async () => {
-					const rating = parseInt(span.dataset.star);
-					// highlight immediately
-					rateEl.querySelectorAll('span').forEach(s => {
-						s.classList.toggle('selected', +s.dataset.star <= rating);
-					});
-					scoreEl.textContent = `You rated ${rating} ★`;
-					try {
-						await fetch('api/rate', {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ gameId, stars: rating })
-						});
-						await load(gameId, rateEl, scoreEl);
-					} catch (err) {
-						console.error('Rating failed', err);
-					}
-				});
-			});
-			load(gameId, rateEl, scoreEl).catch(err => console.error(err));
-		});
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const featuredGameId = 'maze_runner_3d'; // Update this with the current featured game ID
+            const stars = document.querySelectorAll('.featured .star');
+            const ratingMessage = document.querySelector('.featured .rating-message');
 
-		async function load(gameId, rateEl, scoreEl) {
-			try {
-				const r = await fetch(`api/ratings/${encodeURIComponent(gameId)}`).then(r => r.json());
-				scoreEl.textContent = `${r.average} ★ from ${r.votes} votes` + (r.mine ? ` - You rated ${r.mine}` : '');
-				rateEl.querySelectorAll('span').forEach(span => {
-					span.classList.toggle('selected', r.mine && +span.dataset.star <= r.mine);
-				});
-			} catch (err) {
-				console.error('Failed to load rating', err);
-			}
-		}
-	</script>
+            const fetchRating = async (gameId) => {
+                try {
+                    const response = await fetch(`/api/ratings/${gameId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.averageRating) {
+                            const avgRating = Math.round(data.averageRating);
+                            stars.forEach((star, index) => {
+                                if (index < avgRating) {
+                                    star.classList.add('selected');
+                                } else {
+                                    star.classList.remove('selected');
+                                }
+                            });
+                            ratingMessage.textContent = `Average rating: ${data.averageRating.toFixed(1)} (${data.totalRatings} votes)`;
+                        } else {
+                            ratingMessage.textContent = 'No ratings yet.';
+                        }
+                    } else {
+                        ratingMessage.textContent = 'Could not fetch ratings.';
+                    }
+                } catch (error) {
+                    console.error('Error fetching rating:', error);
+                    ratingMessage.textContent = 'Error fetching rating.';
+                }
+            };
+
+            const submitRating = async (gameId, rating) => {
+                try {
+                    const response = await fetch('/api/rate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ gameId, stars: rating }),
+                    });
+
+                    if (response.ok) {
+                        ratingMessage.textContent = 'Thanks for your rating!';
+                        fetchRating(gameId); // Refresh rating after submission
+                    } else {
+                        const errorData = await response.json();
+                        ratingMessage.textContent = errorData.message || 'Failed to submit rating.';
+                    }
+                } catch (error) {
+                    console.error('Error submitting rating:', error);
+                    ratingMessage.textContent = 'Error submitting rating.';
+                }
+            };
+
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const rating = parseInt(star.dataset.value);
+                    submitRating(featuredGameId, rating);
+                });
+            });
+
+            // Initial fetch of the rating for the featured game
+            fetchRating(featuredGameId);
+        });
+    </script>
 </body>
-
 </html>
+
