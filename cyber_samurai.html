@@ -435,6 +435,10 @@
             // Gravity
             player.velocityY += 0.6;
 
+            // Save previous position for accurate collision resolution
+            const prevX = player.x;
+            const prevY = player.y;
+
             // Update position
             player.x += player.velocityX;
             player.y += player.velocityY;
@@ -442,28 +446,33 @@
             // Platform collision
             player.onGround = false;
             player.onWall = false;
-            
+
             platforms.forEach(platform => {
                 if (checkCollision(player, platform)) {
+                    const prevBottom = prevY + player.height;
+                    const prevTop = prevY;
+                    const prevLeft = prevX;
+                    const prevRight = prevX + player.width;
+
                     // Top collision (landing on platform)
-                    if (player.velocityY > 0 && player.y < platform.y) {
+                    if (prevBottom <= platform.y && player.velocityY > 0) {
                         player.y = platform.y - player.height;
                         player.velocityY = 0;
                         player.onGround = true;
                     }
                     // Bottom collision (hitting platform from below)
-                    else if (player.velocityY < 0 && player.y > platform.y) {
+                    else if (prevTop >= platform.y + platform.height && player.velocityY < 0) {
                         player.y = platform.y + platform.height;
                         player.velocityY = 0;
                     }
                     // Side collisions (walls)
-                    else if (player.velocityX > 0 && player.x < platform.x) {
+                    else if (prevRight <= platform.x && player.velocityX > 0) {
                         player.x = platform.x - player.width;
                         player.velocityX = 0;
                         player.onWall = true;
                         player.wallSide = -1;
                     }
-                    else if (player.velocityX < 0 && player.x > platform.x) {
+                    else if (prevLeft >= platform.x + platform.width && player.velocityX < 0) {
                         player.x = platform.x + platform.width;
                         player.velocityX = 0;
                         player.onWall = true;
