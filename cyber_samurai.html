@@ -189,6 +189,8 @@
             attackCooldown: 0,
             dashCooldown: 0,
             shurikenCooldown: 0,
+            dashing: false,
+            dashTime: 0,
             color: '#00ffff',
             trail: []
         };
@@ -365,15 +367,19 @@
             if (gameState.keys['e'] && player.dashCooldown <= 0) {
                 player.velocityX = player.facing * player.speed * 3;
                 player.dashCooldown = 30;
-                createParticle(player.x + player.width/2, player.y + player.height/2, '#00ffff', 
+                player.dashing = true;
+                player.dashTime = 10;
+                createParticle(player.x + player.width/2, player.y + player.height/2, '#00ffff',
                               -player.facing * 3, Math.random() * 4 - 2, 20);
             }
 
             // Throw shuriken
             if (gameState.keys['q'] && player.shurikenCooldown <= 0) {
                 gameState.shurikens.push({
-                    x: player.x + player.width/2,
-                    y: player.y + player.height/2,
+                    x: player.x + player.width/2 - 5,
+                    y: player.y + player.height/2 - 5,
+                    width: 10,
+                    height: 10,
                     velocityX: player.facing * 8,
                     velocityY: -2,
                     rotation: 0,
@@ -421,6 +427,10 @@
             if (player.dashCooldown > 0) player.dashCooldown--;
             if (player.shurikenCooldown > 0) player.shurikenCooldown--;
             if (player.attackCooldown <= 0) player.attacking = false;
+            if (player.dashTime > 0) {
+                player.dashTime--;
+                if (player.dashTime <= 0) player.dashing = false;
+            }
 
             // Gravity
             player.velocityY += 0.6;
@@ -540,7 +550,7 @@
                     }
                 });
                 
-                if (shuriken.life <= 0 || shuriken.x < 0 || shuriken.x > canvas.width) {
+                if (shuriken.life <= 0 || shuriken.x < 0 || shuriken.x + shuriken.width > canvas.width) {
                     gameState.shurikens.splice(i, 1);
                 }
             }
@@ -548,7 +558,7 @@
 
         // Update enemies
         function updateEnemies() {
-            enemies.forEach(enemy => {
+            enemies.forEach((enemy, index) => {
                 // Basic AI movement
                 enemy.x += enemy.velocityX;
                 
@@ -570,10 +580,28 @@
                 
                 // Check collision with player
                 if (checkCollision(player, enemy)) {
-                    gameState.health -= 1;
-                    // Knockback
-                    player.velocityX = (player.x < enemy.x) ? -5 : 5;
-                    player.velocityY = -3;
+                    if (player.dashing) {
+                        enemy.health--;
+
+                        createParticle(enemy.x + enemy.width/2, enemy.y + enemy.height/2, '#ff0000',
+                                      Math.random() * 4 - 2, Math.random() * 4 - 2, 20);
+
+                        if (enemy.health <= 0) {
+                            enemies.splice(index, 1);
+                            gameState.score += enemy.type === 'boss' ? 100 : enemy.type === 'heavy' ? 50 : 25;
+                            gameState.enemiesKilled++;
+
+                            for (let j = 0; j < 6; j++) {
+                                createParticle(enemy.x + enemy.width/2, enemy.y + enemy.height/2, '#ff4444',
+                                              Math.random() * 6 - 3, Math.random() * 6 - 3, 25);
+                            }
+                        }
+                    } else {
+                        gameState.health -= 1;
+                        // Knockback
+                        player.velocityX = (player.x < enemy.x) ? -5 : 5;
+                        player.velocityY = -3;
+                    }
                 }
             });
         }
@@ -637,9 +665,12 @@
             player.attackCooldown = 0;
             player.dashCooldown = 0;
             player.shurikenCooldown = 0;
+            player.dashing = false;
+            player.dashTime = 0;
             player.trail = [];
-            
+
             document.getElementById('gameOverScreen').style.display = 'none';
+            gameLoop();
         }
 
         // Drawing functions
@@ -751,11 +782,11 @@
         function drawShurikens() {
             gameState.shurikens.forEach(shuriken => {
                 ctx.save();
-                ctx.translate(shuriken.x + 5, shuriken.y + 5);
+                ctx.translate(shuriken.x + shuriken.width/2, shuriken.y + shuriken.height/2);
                 ctx.rotate(shuriken.rotation);
                 ctx.fillStyle = '#cccccc';
-                ctx.fillRect(-5, -1, 10, 2);
-                ctx.fillRect(-1, -5, 2, 10);
+                ctx.fillRect(-shuriken.width/2, -1, shuriken.width, 2);
+                ctx.fillRect(-1, -shuriken.height/2, 2, shuriken.height);
                 ctx.restore();
             });
         }
