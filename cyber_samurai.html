@@ -597,10 +597,13 @@
                             }
                         }
                     } else {
-                        gameState.health -= 1;
-                        // Knockback
-                        player.velocityX = (player.x < enemy.x) ? -5 : 5;
-                        player.velocityY = -3;
+                        // Avoid damage when the player is simply colliding with a wall
+                        if (!player.onWall) {
+                            gameState.health -= 1;
+                            // Knockback
+                            player.velocityX = (player.x < enemy.x) ? -5 : 5;
+                            player.velocityY = -3;
+                        }
                     }
                 }
             });
