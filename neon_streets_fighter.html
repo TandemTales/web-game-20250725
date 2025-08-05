@@ -194,8 +194,9 @@
             • W/S or ↑/↓: Move up/down<br>
             • SPACE: Punch<br>
             • SHIFT: Kick<br>
-            • E: Special Attack (when charged)<br>
-            • Q: Block<br><br>
+            • E: Special Attack (when charge bar is full; fill it by hitting enemies)<br>
+            • Q: Block<br>
+            • Land hits quickly to build your combo and boost your score<br><br>
             <strong>Mission:</strong> Fight through the neon-lit streets! Defeat waves of enemies, build combos for higher scores, and survive as long as possible!
         </div>
         
@@ -370,9 +371,9 @@
             }
 
             if (gameState.keys['w'] || gameState.keys['arrowup']) {
-                player.velocityZ = -player.speed * 0.7;
+                player.velocityZ = -player.speed;
             } else if (gameState.keys['s'] || gameState.keys['arrowdown']) {
-                player.velocityZ = player.speed * 0.7;
+                player.velocityZ = player.speed;
             } else {
                 player.velocityZ *= 0.8;
             }
@@ -433,9 +434,19 @@
             player.attackCooldown = type === 'special' ? 30 : (type === 'kick' ? 20 : 15);
             player.animTimer = 0;
 
+            // Determine attack hitbox immediately for collision detection
+            const range = type === 'special' ? 80 : 50;
+            const attackHitbox = {
+                x: player.x + (player.facing > 0 ? player.width : -range),
+                y: player.y,
+                width: range,
+                height: player.height
+            };
+            player.hitbox = attackHitbox;
+
             // Check for hits
             gameState.enemies.forEach(enemy => {
-                if (enemy.health > 0 && isColliding(player.hitbox, enemy)) {
+                if (enemy.health > 0 && isColliding(attackHitbox, enemy)) {
                     damageEnemy(enemy, type);
                 }
             });
