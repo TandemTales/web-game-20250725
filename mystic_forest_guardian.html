@@ -500,19 +500,40 @@
 
         // Spawn enemies for current wave
         function spawnWave() {
-            // More gradual difficulty progression
-            const baseEnemies = 2;
-            const waveBonus = Math.floor((gameState.wave - 1) / 2); // Increase every 2 waves
-            const enemyCount = Math.min(baseEnemies + waveBonus, 6); // Cap at 6 enemies
+            // Much more gradual difficulty progression to prevent overwhelming players
+            let enemyCount;
+            let spawnDelay;
+            let preferredSides;
             
-            // Longer delays between spawns to prevent overwhelming
-            const baseDelay = 2000; // 2 seconds base delay
+            if (gameState.wave === 1) {
+                enemyCount = 1; // Start with just 1 enemy
+                spawnDelay = 3000; // 3 seconds between spawns
+                preferredSides = 1; // Only from one side
+            } else if (gameState.wave === 2) {
+                enemyCount = 2; // Still manageable
+                spawnDelay = 4000; // Even longer delay for wave 2
+                preferredSides = 1; // Still from one side only
+            } else if (gameState.wave === 3) {
+                enemyCount = 2;
+                spawnDelay = 3000;
+                preferredSides = 2; // Now introduce two sides
+            } else if (gameState.wave <= 5) {
+                enemyCount = 3;
+                spawnDelay = 2500;
+                preferredSides = 2;
+            } else {
+                // Later waves can be more challenging
+                const baseEnemies = 3;
+                const waveBonus = Math.floor((gameState.wave - 5) / 2);
+                enemyCount = Math.min(baseEnemies + waveBonus, 6); // Cap at 6 enemies
+                spawnDelay = 2000;
+                preferredSides = gameState.wave <= 8 ? 3 : 4; // Gradually introduce all sides
+            }
+            
             const delayVariation = 1000; // Up to 1 second additional delay
             
             for (let i = 0; i < enemyCount; i++) {
                 setTimeout(() => {
-                    // Prefer spawning from fewer sides early in the wave
-                    const preferredSides = gameState.wave <= 3 ? 2 : 4;
                     const side = Math.floor(Math.random() * preferredSides);
                     let x, y;
                     
@@ -525,7 +546,7 @@
                     
                     const type = (gameState.wave % 5 === 0 && i === 0) ? 'boss' : 'shadow';
                     enemies.push(new Enemy(x, y, type));
-                }, i * (baseDelay + Math.random() * delayVariation));
+                }, i * (spawnDelay + Math.random() * delayVariation));
             }
         }
 
