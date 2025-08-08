@@ -293,7 +293,7 @@
                     width: 20,
                     height: 40,
                     angle: 0,
-                    speed: 80 + Math.random() * 40,
+                    speed: 40 + Math.random() * 30, // Reduced from 80 + Math.random() * 40
                     color: `hsl(${Math.random() * 360}, 70%, 50%)`,
                     waypointIndex: 0,
                     lapProgress: 0
@@ -362,10 +362,16 @@
             }
             
             if (keys['ArrowLeft']) {
-                player.angle -= 0.05 * (speed / maxSpeed);
+                // Improved turning: base turn rate + speed-dependent component
+                let baseTurnRate = 0.03;
+                let speedTurnRate = 0.02 * (speed / maxSpeed);
+                player.angle -= baseTurnRate + speedTurnRate;
             }
             if (keys['ArrowRight']) {
-                player.angle += 0.05 * (speed / maxSpeed);
+                // Improved turning: base turn rate + speed-dependent component
+                let baseTurnRate = 0.03;
+                let speedTurnRate = 0.02 * (speed / maxSpeed);
+                player.angle += baseTurnRate + speedTurnRate;
             }
             
             turboBoost = keys[' '] && turboEnergy > 0;
@@ -403,11 +409,11 @@
                 car.angle = targetAngle;
                 
                 // Add some variation to AI speed
-                car.speed += (Math.random() - 0.5) * 2;
-                car.speed = Math.max(60, Math.min(120, car.speed));
+                car.speed += (Math.random() - 0.5) * 1; // Reduced variation
+                car.speed = Math.max(30, Math.min(70, car.speed)); // Reduced speed range
                 
-                car.x += Math.sin(car.angle) * car.speed * 0.08;
-                car.y -= Math.cos(car.angle) * car.speed * 0.08;
+                car.x += Math.sin(car.angle) * car.speed * 0.06; // Reduced from 0.08
+                car.y -= Math.cos(car.angle) * car.speed * 0.06;
             });
         }
 
@@ -417,15 +423,21 @@
                 let dy = player.y - checkpoint.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < 40 && !checkpoint.passed) {
+                if (distance < 60 && !checkpoint.passed) {
                     checkpoint.passed = true;
-                    
-                    // Check if all checkpoints passed
-                    if (checkpoints.every(cp => cp.passed)) {
-                        completeLap();
-                    }
                 }
             });
+            
+            // Check if we've passed the start/finish line after passing other checkpoints
+            let startFinish = checkpoints[0];
+            let dx = player.x - startFinish.x;
+            let dy = player.y - startFinish.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // If we're near start/finish and have passed at least 2 other checkpoints, complete lap
+            if (distance < 60 && checkpoints.slice(1).filter(cp => cp.passed).length >= 2) {
+                completeLap();
+            }
         }
 
         function completeLap() {
