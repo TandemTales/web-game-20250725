@@ -241,7 +241,9 @@
             height: 40,
             angle: 0,
             speed: 0,
-            color: '#ff0000'
+            color: '#ff0000',
+            waypointIndex: 0,
+            lapProgress: 0
         };
 
         // AI cars
@@ -320,6 +322,8 @@
             player.x = 400;
             player.y = 500;
             player.angle = 0;
+            player.waypointIndex = 0;
+            player.lapProgress = 0;
             speed = 0;
             currentLap = 1;
             racePosition = 1;
@@ -386,6 +390,17 @@
             // Keep player on screen
             player.x = Math.max(10, Math.min(canvas.width - 10, player.x));
             player.y = Math.max(10, Math.min(canvas.height - 10, player.y));
+            
+            // Update player waypoint progress (similar to AI cars)
+            let targetWaypoint = trackWaypoints[player.waypointIndex];
+            let dx = targetWaypoint.x - player.x;
+            let dy = targetWaypoint.y - player.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 80) { // Slightly larger threshold for player
+                player.waypointIndex = (player.waypointIndex + 1) % trackWaypoints.length;
+                if (player.waypointIndex === 0) player.lapProgress++;
+            }
             
             // Check checkpoints
             checkCheckpoints();
@@ -464,8 +479,8 @@
         }
 
         function updateRacePosition() {
-            // Simple position calculation based on lap progress
-            let playerProgress = (currentLap - 1) * trackWaypoints.length;
+            // Improved position calculation using waypoint progress for both player and AI
+            let playerProgress = player.lapProgress * trackWaypoints.length + player.waypointIndex;
             let position = 1;
             
             aiCars.forEach(car => {
