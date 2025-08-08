@@ -500,11 +500,20 @@
 
         // Spawn enemies for current wave
         function spawnWave() {
-            const enemyCount = Math.min(3 + gameState.wave, 8);
+            // More gradual difficulty progression
+            const baseEnemies = 2;
+            const waveBonus = Math.floor((gameState.wave - 1) / 2); // Increase every 2 waves
+            const enemyCount = Math.min(baseEnemies + waveBonus, 6); // Cap at 6 enemies
+            
+            // Longer delays between spawns to prevent overwhelming
+            const baseDelay = 2000; // 2 seconds base delay
+            const delayVariation = 1000; // Up to 1 second additional delay
             
             for (let i = 0; i < enemyCount; i++) {
                 setTimeout(() => {
-                    const side = Math.floor(Math.random() * 4);
+                    // Prefer spawning from fewer sides early in the wave
+                    const preferredSides = gameState.wave <= 3 ? 2 : 4;
+                    const side = Math.floor(Math.random() * preferredSides);
                     let x, y;
                     
                     switch (side) {
@@ -516,7 +525,7 @@
                     
                     const type = (gameState.wave % 5 === 0 && i === 0) ? 'boss' : 'shadow';
                     enemies.push(new Enemy(x, y, type));
-                }, i * 1000);
+                }, i * (baseDelay + Math.random() * delayVariation));
             }
         }
 
