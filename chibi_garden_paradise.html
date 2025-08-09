@@ -345,15 +345,6 @@
         
         function drawPlots() {
             gameState.plots.forEach(plot => {
-                // Highlight plot area so players know where to click
-                if (!plot.crop) {
-                    ctx.fillStyle = 'rgba(210, 180, 140, 0.4)';
-                    ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
-                    ctx.strokeStyle = 'rgba(139, 69, 19, 0.8)';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
-                }
-
                 // Draw crop if exists
                 if (plot.crop) {
                     drawCrop(plot);
@@ -366,13 +357,7 @@
                 }
 
                 // Draw prominent clickable indicators based on tool selection
-                if (gameState.selectedTool === 'plant' && !plot.crop) {
-                    ctx.strokeStyle = 'rgba(144, 238, 144, 0.8)';
-                    ctx.lineWidth = 3;
-                    ctx.setLineDash([5, 5]);
-                    ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
-                    ctx.setLineDash([]);
-                } else if (gameState.selectedTool === 'water' && plot.crop && !plot.watered) {
+                if (gameState.selectedTool === 'water' && plot.crop && !plot.watered) {
                     ctx.strokeStyle = 'rgba(0, 150, 255, 0.8)';
                     ctx.lineWidth = 3;
                     ctx.setLineDash([5, 5]);
