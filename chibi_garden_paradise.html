@@ -38,7 +38,7 @@
         #gameCanvas {
             border: 4px solid #8FBC8F;
             border-radius: 15px;
-            background: linear-gradient(45deg, #98FB98, #90EE90);
+            background: #98FB98;
             cursor: pointer;
             max-width: 100%;
             height: auto;
@@ -168,10 +168,27 @@
                 transform: translateY(-50px);
             }
         }
+
+        #loadingScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: #4A90E2;
+            border-radius: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="gameContainer">
+        <div id="loadingScreen">Loading cute chibi art... 🌱</div>
+        
         <a href="index.html" class="back-btn">← Back to Home</a>
         
         <h1>🌱 Chibi Garden Paradise 🌱</h1>
@@ -206,6 +223,44 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const loadingScreen = document.getElementById('loadingScreen');
+        
+        // Image loading
+        const images = {};
+        const imageUrls = {
+            background: 'images/garden_environment.png',
+            farmer: 'images/chibi_farmer_character.png',
+            animals: 'images/farm_animals_set.png',
+            vegetables: 'images/vegetable_crops.png',
+            tools: 'images/farming_tools.png'
+        };
+        
+        let imagesLoaded = 0;
+        const totalImages = Object.keys(imageUrls).length;
+        
+        // Load all images
+        function loadImages() {
+            for (const [key, url] of Object.entries(imageUrls)) {
+                const img = new Image();
+                img.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === totalImages) {
+                        loadingScreen.style.display = 'none';
+                        initializeGame();
+                    }
+                };
+                img.onerror = () => {
+                    console.warn(`Failed to load image: ${url}`);
+                    imagesLoaded++;
+                    if (imagesLoaded === totalImages) {
+                        loadingScreen.style.display = 'none';
+                        initializeGame();
+                    }
+                };
+                img.src = url;
+                images[key] = img;
+            }
+        }
         
         // Game state
         let gameState = {
@@ -239,19 +294,19 @@
             
             // Initialize animals
             gameState.animals = [
-                { x: 50, y: 100, type: 'chicken', happiness: 50, lastFed: 0 },
-                { x: 600, y: 100, type: 'cow', happiness: 50, lastFed: 0 },
-                { x: 50, y: 350, type: 'pig', happiness: 50, lastFed: 0 },
-                { x: 600, y: 350, type: 'sheep', happiness: 50, lastFed: 0 }
+                { x: 50, y: 100, type: 'chicken', happiness: 50, lastFed: 0, animalIndex: 3 },
+                { x: 600, y: 100, type: 'cow', happiness: 50, lastFed: 0, animalIndex: 2 },
+                { x: 50, y: 350, type: 'pig', happiness: 50, lastFed: 0, animalIndex: 1 },
+                { x: 600, y: 350, type: 'sheep', happiness: 50, lastFed: 0, animalIndex: 0 }
             ];
         }
         
-        // Crop types
+        // Crop types with vegetable indices
         const cropTypes = [
-            { name: 'carrot', growthTime: 3000, value: 15, color: '#FF8C00' },
-            { name: 'tomato', growthTime: 4000, value: 20, color: '#FF6347' },
-            { name: 'corn', growthTime: 5000, value: 25, color: '#FFD700' },
-            { name: 'lettuce', growthTime: 2500, value: 12, color: '#90EE90' }
+            { name: 'carrot', growthTime: 3000, value: 15, vegIndex: 0 },
+            { name: 'tomato', growthTime: 4000, value: 20, vegIndex: 1 },
+            { name: 'corn', growthTime: 5000, value: 25, vegIndex: 2 },
+            { name: 'lettuce', growthTime: 2500, value: 12, vegIndex: 4 }
         ];
         
         function selectTool(tool) {
@@ -261,60 +316,30 @@
         }
         
         function drawBackground() {
-            // Sky gradient
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(1, '#98FB98');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Ground
-            ctx.fillStyle = '#8FBC8F';
-            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-            
-            // Decorative elements
-            drawClouds();
-            drawTrees();
+            // Draw the garden environment background
+            if (images.background && images.background.complete) {
+                ctx.drawImage(images.background, 0, 0, canvas.width, canvas.height);
+            } else {
+                // Fallback gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#87CEEB');
+                gradient.addColorStop(1, '#98FB98');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
         }
         
-        function drawClouds() {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            // Cloud 1
-            ctx.beginPath();
-            ctx.arc(100, 60, 20, 0, Math.PI * 2);
-            ctx.arc(120, 60, 25, 0, Math.PI * 2);
-            ctx.arc(140, 60, 20, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Cloud 2
-            ctx.beginPath();
-            ctx.arc(500, 40, 15, 0, Math.PI * 2);
-            ctx.arc(515, 40, 20, 0, Math.PI * 2);
-            ctx.arc(530, 40, 15, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        function drawTrees() {
-            // Tree 1
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(20, 200, 15, 40);
-            ctx.fillStyle = '#228B22';
-            ctx.beginPath();
-            ctx.arc(27, 200, 25, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Tree 2
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(650, 250, 15, 40);
-            ctx.fillStyle = '#228B22';
-            ctx.beginPath();
-            ctx.arc(657, 250, 25, 0, Math.PI * 2);
-            ctx.fill();
+        function drawFarmer() {
+            if (images.farmer && images.farmer.complete) {
+                // Draw the cute chibi farmer character
+                const farmerSize = 60;
+                ctx.drawImage(images.farmer, 10, canvas.height - farmerSize - 10, farmerSize, farmerSize);
+            }
         }
         
         function drawPlots() {
             gameState.plots.forEach(plot => {
-                // Draw soil
+                // Draw soil plot with subtle styling
                 ctx.fillStyle = '#8B4513';
                 ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
                 
@@ -342,25 +367,32 @@
             const centerY = plot.y + plot.height / 2;
             
             if (plot.growthStage === 1) {
-                // Seedling
+                // Seedling - simple green sprout
                 ctx.fillStyle = '#90EE90';
                 ctx.fillRect(centerX - 3, centerY - 5, 6, 10);
             } else if (plot.growthStage === 2) {
-                // Growing
+                // Growing - medium plant
                 ctx.fillStyle = '#32CD32';
                 ctx.fillRect(centerX - 8, centerY - 15, 16, 20);
-                ctx.fillStyle = crop.color;
-                ctx.beginPath();
-                ctx.arc(centerX, centerY - 10, 5, 0, Math.PI * 2);
-                ctx.fill();
             } else if (plot.growthStage === 3) {
-                // Mature
-                ctx.fillStyle = '#228B22';
-                ctx.fillRect(centerX - 10, centerY - 20, 20, 25);
-                ctx.fillStyle = crop.color;
-                ctx.beginPath();
-                ctx.arc(centerX, centerY - 15, 8, 0, Math.PI * 2);
-                ctx.fill();
+                // Mature - draw the actual vegetable from the art
+                if (images.vegetables && images.vegetables.complete) {
+                    const vegSize = 40;
+                    const sourceX = (crop.vegIndex % 3) * 200; // Assuming 3 vegetables per row
+                    const sourceY = Math.floor(crop.vegIndex / 3) * 200; // Assuming 200px per vegetable
+                    
+                    ctx.drawImage(
+                        images.vegetables,
+                        sourceX, sourceY, 200, 200, // Source rectangle
+                        centerX - vegSize/2, centerY - vegSize/2, vegSize, vegSize // Destination
+                    );
+                } else {
+                    // Fallback to colored circle
+                    ctx.fillStyle = '#FFD700';
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY - 15, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 
                 // Sparkle effect
                 ctx.fillStyle = '#FFD700';
@@ -371,30 +403,65 @@
         }
         
         function drawAnimals() {
-            gameState.animals.forEach(animal => {
-                const happiness = animal.happiness;
-                let color = happiness > 70 ? '#90EE90' : happiness > 30 ? '#FFD700' : '#FFB6C1';
-                
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                ctx.arc(animal.x, animal.y, 20, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Animal emoji
-                ctx.font = '24px Arial';
-                ctx.textAlign = 'center';
-                let emoji = '🐄';
-                if (animal.type === 'chicken') emoji = '🐔';
-                else if (animal.type === 'pig') emoji = '🐷';
-                else if (animal.type === 'sheep') emoji = '🐑';
-                
-                ctx.fillText(emoji, animal.x, animal.y + 8);
-                
-                // Happiness indicator
-                if (happiness > 80) {
-                    ctx.fillText('💖', animal.x, animal.y - 30);
-                }
-            });
+            if (images.animals && images.animals.complete) {
+                gameState.animals.forEach(animal => {
+                    const happiness = animal.happiness;
+                    const animalSize = 50;
+                    
+                    // Draw happiness background
+                    if (happiness > 70) {
+                        ctx.fillStyle = 'rgba(144, 238, 144, 0.5)';
+                    } else if (happiness > 30) {
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                    } else {
+                        ctx.fillStyle = 'rgba(255, 182, 193, 0.5)';
+                    }
+                    
+                    ctx.beginPath();
+                    ctx.arc(animal.x, animal.y, animalSize/2 + 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Draw the animal from the sprite sheet
+                    const sourceX = (animal.animalIndex % 2) * 256; // 2 animals per row
+                    const sourceY = Math.floor(animal.animalIndex / 2) * 256; // 256px per animal
+                    
+                    ctx.drawImage(
+                        images.animals,
+                        sourceX, sourceY, 256, 256, // Source rectangle
+                        animal.x - animalSize/2, animal.y - animalSize/2, animalSize, animalSize // Destination
+                    );
+                    
+                    // Happiness indicator
+                    if (happiness > 80) {
+                        ctx.font = '16px Arial';
+                        ctx.fillText('💖', animal.x - 8, animal.y - 35);
+                    }
+                });
+            } else {
+                // Fallback to emoji animals
+                gameState.animals.forEach(animal => {
+                    const happiness = animal.happiness;
+                    let color = happiness > 70 ? '#90EE90' : happiness > 30 ? '#FFD700' : '#FFB6C1';
+                    
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(animal.x, animal.y, 20, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.font = '24px Arial';
+                    ctx.textAlign = 'center';
+                    let emoji = '🐄';
+                    if (animal.type === 'chicken') emoji = '🐔';
+                    else if (animal.type === 'pig') emoji = '🐷';
+                    else if (animal.type === 'sheep') emoji = '🐑';
+                    
+                    ctx.fillText(emoji, animal.x, animal.y + 8);
+                    
+                    if (happiness > 80) {
+                        ctx.fillText('💖', animal.x, animal.y - 30);
+                    }
+                });
+            }
         }
         
         function drawUI() {
@@ -516,7 +583,9 @@
             document.body.appendChild(particle);
             
             setTimeout(() => {
-                document.body.removeChild(particle);
+                if (document.body.contains(particle)) {
+                    document.body.removeChild(particle);
+                }
             }, 2000);
         }
         
@@ -538,7 +607,6 @@
         
         function updateAnimals() {
             gameState.animals.forEach(animal => {
-                // Decrease happiness over time
                 if (Date.now() - animal.lastFed > 30000) {
                     animal.happiness = Math.max(0, animal.happiness - 0.1);
                 }
@@ -549,7 +617,7 @@
             const newLevel = Math.floor(gameState.harvested / 10) + 1;
             if (newLevel > gameState.level) {
                 gameState.level = newLevel;
-                gameState.coins += 50; // Level up bonus
+                gameState.coins += 50;
                 showParticle(canvas.width / 2, canvas.height / 2, `Level ${newLevel}! +50 coins!`, '#FFD700');
             }
         }
@@ -567,6 +635,7 @@
             drawBackground();
             drawPlots();
             drawAnimals();
+            drawFarmer();
             drawUI();
             
             updateCrops();
@@ -575,35 +644,39 @@
             requestAnimationFrame(gameLoop);
         }
         
-        // Event listeners
-        canvas.addEventListener('click', handleClick);
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('click', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
-        });
-        
-        // Initialize game
-        initializePlots();
-        updateUI();
-        gameLoop();
-        
-        // Auto-save game state
-        setInterval(() => {
-            localStorage.setItem('chibiGardenSave', JSON.stringify(gameState));
-        }, 10000);
-        
-        // Load saved game
-        const savedGame = localStorage.getItem('chibiGardenSave');
-        if (savedGame) {
-            const saved = JSON.parse(savedGame);
-            gameState = { ...gameState, ...saved };
+        function initializeGame() {
+            initializePlots();
             updateUI();
+            gameLoop();
+            
+            // Event listeners
+            canvas.addEventListener('click', handleClick);
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('click', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            });
+            
+            // Auto-save game state
+            setInterval(() => {
+                localStorage.setItem('chibiGardenSave', JSON.stringify(gameState));
+            }, 10000);
+            
+            // Load saved game
+            const savedGame = localStorage.getItem('chibiGardenSave');
+            if (savedGame) {
+                const saved = JSON.parse(savedGame);
+                gameState = { ...gameState, ...saved };
+                updateUI();
+            }
         }
+        
+        // Start loading images
+        loadImages();
     </script>
 </body>
 </html>
