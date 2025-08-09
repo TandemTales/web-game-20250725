@@ -480,10 +480,10 @@
 		document.addEventListener('DOMContentLoaded', function() {
 			const ratingContainers = document.querySelectorAll('.rate');
 			
-			ratingContainers.forEach(container => {
-				const gameId = container.getAttribute('data-id');
-				const stars = container.querySelectorAll('span[data-star]');
-				const scoreElement = container.nextElementSibling;
+                        ratingContainers.forEach(container => {
+                                const gameId = container.parentElement.getAttribute('data-id');
+                                const stars = container.querySelectorAll('span[data-star]');
+                                const scoreElement = container.nextElementSibling;
 				
 				// Load existing rating
 				loadRating(gameId, stars, scoreElement);
