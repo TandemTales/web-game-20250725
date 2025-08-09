@@ -274,15 +274,15 @@
             particles: []
         };
         
-        // Initialize game plots (2x2 grid to match background art)
+        // Initialize game plots (fixed 2x2 grid)
         function initializePlots() {
             gameState.plots = [];
-            // Coordinates precisely adjusted to match the soil plots in the background art
+            // Four plot locations aligned with the soil patches in the background art
             const plotPositions = [
-                { x: 270, y: 280, width: 140, height: 80 }, // Top left
-                { x: 430, y: 280, width: 140, height: 80 }, // Top right
-                { x: 270, y: 390, width: 140, height: 80 }, // Bottom left
-                { x: 430, y: 390, width: 140, height: 80 }  // Bottom right
+                { x: 237, y: 209, width: 120, height: 90 }, // Top left
+                { x: 414, y: 214, width: 120, height: 90 }, // Top right
+                { x: 170, y: 300, width: 120, height: 90 }, // Bottom left
+                { x: 360, y: 305, width: 120, height: 90 }  // Bottom right
             ];
             
             plotPositions.forEach(pos => {
@@ -345,35 +345,42 @@
         
         function drawPlots() {
             gameState.plots.forEach(plot => {
-                // Don't draw the soil plot background - let the background art show through
-                
+                // Highlight plot area so players know where to click
+                if (!plot.crop) {
+                    ctx.fillStyle = 'rgba(210, 180, 140, 0.4)';
+                    ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
+                    ctx.strokeStyle = 'rgba(139, 69, 19, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                }
+
                 // Draw crop if exists
                 if (plot.crop) {
                     drawCrop(plot);
                 }
-                
+
                 // Draw watered effect
                 if (plot.watered && Date.now() - plot.lastWatered < 5000) {
                     ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
                     ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
                 }
-                
-                // Draw subtle clickable area indicator when plant tool is selected
+
+                // Draw prominent clickable indicators based on tool selection
                 if (gameState.selectedTool === 'plant' && !plot.crop) {
-                    ctx.strokeStyle = 'rgba(144, 238, 144, 0.6)';
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(144, 238, 144, 0.8)';
+                    ctx.lineWidth = 3;
                     ctx.setLineDash([5, 5]);
                     ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
                     ctx.setLineDash([]);
                 } else if (gameState.selectedTool === 'water' && plot.crop && !plot.watered) {
-                    ctx.strokeStyle = 'rgba(0, 150, 255, 0.6)';
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(0, 150, 255, 0.8)';
+                    ctx.lineWidth = 3;
                     ctx.setLineDash([5, 5]);
                     ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
                     ctx.setLineDash([]);
                 } else if (gameState.selectedTool === 'harvest' && plot.crop && plot.growthStage >= 3) {
-                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)';
+                    ctx.lineWidth = 3;
                     ctx.setLineDash([5, 5]);
                     ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
                     ctx.setLineDash([]);
