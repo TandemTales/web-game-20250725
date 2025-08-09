@@ -228,7 +228,7 @@
         // Image loading
         const images = {};
         const imageUrls = {
-            background: 'images/garden_environment.png',
+            background: 'images/garden_environment_clean.png',
             farmer: 'images/chibi_farmer_character.png',
             animals: 'images/farm_animals_set.png',
             vegetables: 'images/vegetable_crops.png',
@@ -274,30 +274,36 @@
             particles: []
         };
         
-        // Initialize game plots (3x4 grid)
+        // Initialize game plots (2x2 grid to match background art)
         function initializePlots() {
             gameState.plots = [];
-            for (let row = 0; row < 3; row++) {
-                for (let col = 0; col < 4; col++) {
-                    gameState.plots.push({
-                        x: 150 + col * 120,
-                        y: 150 + row * 100,
-                        width: 80,
-                        height: 60,
-                        crop: null,
-                        growthStage: 0,
-                        watered: false,
-                        lastWatered: 0
-                    });
-                }
-            }
+            // Coordinates adjusted to match the soil plots in the background art
+            const plotPositions = [
+                { x: 280, y: 280, width: 140, height: 80 }, // Top left
+                { x: 450, y: 280, width: 140, height: 80 }, // Top right
+                { x: 280, y: 380, width: 140, height: 80 }, // Bottom left
+                { x: 450, y: 380, width: 140, height: 80 }  // Bottom right
+            ];
             
-            // Initialize animals
+            plotPositions.forEach(pos => {
+                gameState.plots.push({
+                    x: pos.x,
+                    y: pos.y,
+                    width: pos.width,
+                    height: pos.height,
+                    crop: null,
+                    growthStage: 0,
+                    watered: false,
+                    lastWatered: 0
+                });
+            });
+            
+            // Initialize animals in visible positions
             gameState.animals = [
-                { x: 50, y: 100, type: 'chicken', happiness: 50, lastFed: 0, animalIndex: 3 },
-                { x: 600, y: 100, type: 'cow', happiness: 50, lastFed: 0, animalIndex: 2 },
-                { x: 50, y: 350, type: 'pig', happiness: 50, lastFed: 0, animalIndex: 1 },
-                { x: 600, y: 350, type: 'sheep', happiness: 50, lastFed: 0, animalIndex: 0 }
+                { x: 150, y: 200, type: 'chicken', happiness: 50, lastFed: 0, animalIndex: 3 },
+                { x: 550, y: 200, type: 'cow', happiness: 50, lastFed: 0, animalIndex: 2 },
+                { x: 150, y: 450, type: 'pig', happiness: 50, lastFed: 0, animalIndex: 1 },
+                { x: 550, y: 450, type: 'sheep', happiness: 50, lastFed: 0, animalIndex: 0 }
             ];
         }
         
@@ -339,14 +345,8 @@
         
         function drawPlots() {
             gameState.plots.forEach(plot => {
-                // Draw soil plot with subtle styling
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
-                
-                // Draw border
-                ctx.strokeStyle = '#654321';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                // Don't draw the soil plot background - let the background art show through
+                // Only draw a subtle border when hovering or for debugging
                 
                 // Draw crop if exists
                 if (plot.crop) {
@@ -358,6 +358,11 @@
                     ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
                     ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
                 }
+                
+                // Optional: Draw subtle border for debugging (can be removed)
+                // ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                // ctx.lineWidth = 1;
+                // ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
             });
         }
         
