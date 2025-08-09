@@ -5,7 +5,7 @@ export const onRequestGet: PagesFunction = async ({ params, env, request }) => {
     const gameId = params!.id as string;
 
     if (!gameId) {
-      return new Response("Game ID required", { status: 400 });
+      return Response.json({ error: "Game ID required" }, { status: 400 });
     }
 
     const ip = request.headers.get("CF-Connecting-IP") ?? "0.0.0.0";
@@ -27,6 +27,6 @@ export const onRequestGet: PagesFunction = async ({ params, env, request }) => {
     });
   } catch (error) {
     console.error('Ratings endpoint error:', error);
-    return new Response("Internal server error", { status: 500 });
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 };

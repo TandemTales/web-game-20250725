@@ -3,14 +3,14 @@ type PagesFunction = any;
 export const onRequestPost: PagesFunction = async ({ request, env }) => {
   try {
     if (!env.DB) {
-      return new Response("Database not configured", { status: 500 });
+      return Response.json({ error: "Database not configured" }, { status: 500 });
     }
 
     const { gameId, stars } = await request.json() as any;
     const rating = parseInt(stars, 10);
 
     if (!gameId || isNaN(rating) || rating < 1 || rating > 5) {
-      return new Response("Bad request", { status: 400 });
+      return Response.json({ error: "Bad request" }, { status: 400 });
     }
 
     const ip = request.headers.get("CF-Connecting-IP") ?? "0.0.0.0";
@@ -29,11 +29,11 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
         .run();
 
       if (!insertResult.success) {
-        return new Response("Database error", { status: 500 });
+        return Response.json({ error: "Database error" }, { status: 500 });
       }
     } catch (dbError) {
       console.error('Database operation failed:', dbError);
-      return new Response("Database operation failed", { status: 500 });
+      return Response.json({ error: "Database operation failed" }, { status: 500 });
     }
 
     // Get updated stats
@@ -48,6 +48,6 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
     });
   } catch (error) {
     console.error('Rate endpoint error:', error);
-    return new Response("Internal server error", { status: 500 });
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 };
