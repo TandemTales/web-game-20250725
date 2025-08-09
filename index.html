@@ -230,6 +230,18 @@
                         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
                         margin-bottom: 20px;
                 }
+                .feedback {
+                        margin-top: 20px;
+                        color: #5F9EA0;
+                        font-size: 14px;
+                }
+                .feedback a {
+                        color: #FFD700;
+                        text-decoration: none;
+                }
+                .feedback a:hover {
+                        color: #FFA500;
+                }
         </style>
 </head>
 <body>
@@ -446,9 +458,10 @@
 				</div>
 				<span class="score"></span>
 			</li>
-		</ul>
-	</div>
-	<script>
+                </ul>
+                <p class="feedback">Have a bug or suggestion? Post your bugs, feedback, and suggestions for improvement on the <a href="https://www.reddit.com/r/BotBuiltArcade/" target="_blank">r/BotBuiltArcade</a> subreddit.</p>
+        </div>
+        <script>
 		document.querySelectorAll('.rate').forEach(rateEl => {
 			const li = rateEl.closest('li') || rateEl.parentElement;
 			const gameId = rateEl.dataset.id || li.dataset.id;
