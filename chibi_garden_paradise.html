@@ -277,12 +277,12 @@
         // Initialize game plots (2x2 grid to match background art)
         function initializePlots() {
             gameState.plots = [];
-            // Coordinates adjusted to match the soil plots in the background art
+            // Coordinates carefully adjusted to match the soil plots in the background art
             const plotPositions = [
-                { x: 280, y: 280, width: 140, height: 80 }, // Top left
-                { x: 450, y: 280, width: 140, height: 80 }, // Top right
-                { x: 280, y: 380, width: 140, height: 80 }, // Bottom left
-                { x: 450, y: 380, width: 140, height: 80 }  // Bottom right
+                { x: 260, y: 270, width: 160, height: 90 }, // Top left
+                { x: 440, y: 270, width: 160, height: 90 }, // Top right
+                { x: 260, y: 380, width: 160, height: 90 }, // Bottom left
+                { x: 440, y: 380, width: 160, height: 90 }  // Bottom right
             ];
             
             plotPositions.forEach(pos => {
@@ -298,12 +298,12 @@
                 });
             });
             
-            // Initialize animals in visible positions
+            // Initialize animals in visible positions around the garden
             gameState.animals = [
-                { x: 150, y: 200, type: 'chicken', happiness: 50, lastFed: 0, animalIndex: 3 },
-                { x: 550, y: 200, type: 'cow', happiness: 50, lastFed: 0, animalIndex: 2 },
-                { x: 150, y: 450, type: 'pig', happiness: 50, lastFed: 0, animalIndex: 1 },
-                { x: 550, y: 450, type: 'sheep', happiness: 50, lastFed: 0, animalIndex: 0 }
+                { x: 120, y: 180, type: 'sheep', happiness: 50, lastFed: 0, animalIndex: 0 },
+                { x: 580, y: 180, type: 'pig', happiness: 50, lastFed: 0, animalIndex: 1 },
+                { x: 120, y: 480, type: 'cow', happiness: 50, lastFed: 0, animalIndex: 2 },
+                { x: 580, y: 480, type: 'chicken', happiness: 50, lastFed: 0, animalIndex: 3 }
             ];
         }
         
@@ -346,7 +346,6 @@
         function drawPlots() {
             gameState.plots.forEach(plot => {
                 // Don't draw the soil plot background - let the background art show through
-                // Only draw a subtle border when hovering or for debugging
                 
                 // Draw crop if exists
                 if (plot.crop) {
@@ -359,10 +358,26 @@
                     ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
                 }
                 
-                // Optional: Draw subtle border for debugging (can be removed)
-                // ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-                // ctx.lineWidth = 1;
-                // ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                // Draw subtle clickable area indicator when plant tool is selected
+                if (gameState.selectedTool === 'plant' && !plot.crop) {
+                    ctx.strokeStyle = 'rgba(144, 238, 144, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                    ctx.setLineDash([]);
+                } else if (gameState.selectedTool === 'water' && plot.crop && !plot.watered) {
+                    ctx.strokeStyle = 'rgba(0, 150, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                    ctx.setLineDash([]);
+                } else if (gameState.selectedTool === 'harvest' && plot.crop && plot.growthStage >= 3) {
+                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                    ctx.setLineDash([]);
+                }
             });
         }
         
@@ -382,13 +397,22 @@
             } else if (plot.growthStage === 3) {
                 // Mature - draw the actual vegetable from the art
                 if (images.vegetables && images.vegetables.complete) {
-                    const vegSize = 40;
-                    const sourceX = (crop.vegIndex % 3) * 200; // Assuming 3 vegetables per row
-                    const sourceY = Math.floor(crop.vegIndex / 3) * 200; // Assuming 200px per vegetable
+                    // Vegetables are in a 3x2 grid layout
+                    const spriteWidth = images.vegetables.width / 3; // 3 columns
+                    const spriteHeight = images.vegetables.height / 2; // 2 rows
+                    
+                    const col = crop.vegIndex % 3;
+                    const row = Math.floor(crop.vegIndex / 3);
+                    
+                    const sourceX = col * spriteWidth;
+                    const sourceY = row * spriteHeight;
+                    
+                    // Draw larger vegetables that fit well in the plot
+                    const vegSize = 60;
                     
                     ctx.drawImage(
                         images.vegetables,
-                        sourceX, sourceY, 200, 200, // Source rectangle
+                        sourceX, sourceY, spriteWidth, spriteHeight, // Source rectangle
                         centerX - vegSize/2, centerY - vegSize/2, vegSize, vegSize // Destination
                     );
                 } else {
@@ -427,12 +451,19 @@
                     ctx.fill();
                     
                     // Draw the animal from the sprite sheet
-                    const sourceX = (animal.animalIndex % 2) * 256; // 2 animals per row
-                    const sourceY = Math.floor(animal.animalIndex / 2) * 256; // 256px per animal
+                    // Animals are in a 2x2 grid layout
+                    const spriteWidth = images.animals.width / 2; // 2 columns
+                    const spriteHeight = images.animals.height / 2; // 2 rows
+                    
+                    const col = animal.animalIndex % 2;
+                    const row = Math.floor(animal.animalIndex / 2);
+                    
+                    const sourceX = col * spriteWidth;
+                    const sourceY = row * spriteHeight;
                     
                     ctx.drawImage(
                         images.animals,
-                        sourceX, sourceY, 256, 256, // Source rectangle
+                        sourceX, sourceY, spriteWidth, spriteHeight, // Source rectangle
                         animal.x - animalSize/2, animal.y - animalSize/2, animalSize, animalSize // Destination
                     );
                     
@@ -440,6 +471,17 @@
                     if (happiness > 80) {
                         ctx.font = '16px Arial';
                         ctx.fillText('💖', animal.x - 8, animal.y - 35);
+                    }
+                    
+                    // Draw clickable indicator when feed tool is selected
+                    if (gameState.selectedTool === 'animal') {
+                        ctx.strokeStyle = 'rgba(255, 165, 0, 0.8)';
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([5, 5]);
+                        ctx.beginPath();
+                        ctx.arc(animal.x, animal.y, animalSize/2 + 10, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
                     }
                 });
             } else {
@@ -464,6 +506,17 @@
                     
                     if (happiness > 80) {
                         ctx.fillText('💖', animal.x, animal.y - 30);
+                    }
+                    
+                    // Draw clickable indicator when feed tool is selected
+                    if (gameState.selectedTool === 'animal') {
+                        ctx.strokeStyle = 'rgba(255, 165, 0, 0.8)';
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([5, 5]);
+                        ctx.beginPath();
+                        ctx.arc(animal.x, animal.y, 30, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
                     }
                 });
             }
