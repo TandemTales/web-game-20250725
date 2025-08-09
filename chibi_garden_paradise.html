@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chibi Garden Paradise</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #gameContainer {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 95%;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #4A90E2;
+            font-size: 2.5em;
+            margin: 0 0 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #gameCanvas {
+            border: 4px solid #8FBC8F;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #98FB98, #90EE90);
+            cursor: pointer;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .ui-panel {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            background: linear-gradient(45deg, #FFB6C1, #FFA07A);
+            border: none;
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-btn.active {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            transform: scale(1.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 5px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .level-display {
+            font-size: 1.2em;
+            color: #4A90E2;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .tool-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .back-btn {
+                position: static;
+                margin-bottom: 15px;
+            }
+            
+            #gameContainer {
+                padding: 15px;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 20px;
+            animation: float-up 2s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <h1>🌱 Chibi Garden Paradise 🌱</h1>
+        
+        <div class="level-display">Level <span id="level">1</span></div>
+        
+        <div class="stats">
+            <div class="stat">💰 Coins: <span id="coins">50</span></div>
+            <div class="stat">🌾 Harvested: <span id="harvested">0</span></div>
+            <div class="stat">⭐ Score: <span id="score">0</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="700" height="500"></canvas>
+        
+        <div class="ui-panel">
+            <button class="tool-btn active" id="plantBtn" onclick="selectTool('plant')">🌱 Plant Seeds (10 coins)</button>
+            <button class="tool-btn" id="waterBtn" onclick="selectTool('water')">💧 Water Plants</button>
+            <button class="tool-btn" id="harvestBtn" onclick="selectTool('harvest')">🌾 Harvest Crops</button>
+            <button class="tool-btn" id="animalBtn" onclick="selectTool('animal')">🐄 Feed Animals (20 coins)</button>
+        </div>
+        
+        <div class="instructions">
+            <strong>How to Play:</strong><br>
+            • Click "Plant Seeds" and then click on empty soil plots to plant crops<br>
+            • Use "Water Plants" to help your crops grow faster<br>
+            • "Harvest Crops" when they're fully grown to earn coins and points<br>
+            • "Feed Animals" to make them happy and earn bonus points<br>
+            • Level up by harvesting crops and unlock new features!
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameState = {
+            coins: 50,
+            harvested: 0,
+            score: 0,
+            level: 1,
+            selectedTool: 'plant',
+            plots: [],
+            animals: [],
+            particles: []
+        };
+        
+        // Initialize game plots (3x4 grid)
+        function initializePlots() {
+            gameState.plots = [];
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 4; col++) {
+                    gameState.plots.push({
+                        x: 150 + col * 120,
+                        y: 150 + row * 100,
+                        width: 80,
+                        height: 60,
+                        crop: null,
+                        growthStage: 0,
+                        watered: false,
+                        lastWatered: 0
+                    });
+                }
+            }
+            
+            // Initialize animals
+            gameState.animals = [
+                { x: 50, y: 100, type: 'chicken', happiness: 50, lastFed: 0 },
+                { x: 600, y: 100, type: 'cow', happiness: 50, lastFed: 0 },
+                { x: 50, y: 350, type: 'pig', happiness: 50, lastFed: 0 },
+                { x: 600, y: 350, type: 'sheep', happiness: 50, lastFed: 0 }
+            ];
+        }
+        
+        // Crop types
+        const cropTypes = [
+            { name: 'carrot', growthTime: 3000, value: 15, color: '#FF8C00' },
+            { name: 'tomato', growthTime: 4000, value: 20, color: '#FF6347' },
+            { name: 'corn', growthTime: 5000, value: 25, color: '#FFD700' },
+            { name: 'lettuce', growthTime: 2500, value: 12, color: '#90EE90' }
+        ];
+        
+        function selectTool(tool) {
+            gameState.selectedTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tool + 'Btn').classList.add('active');
+        }
+        
+        function drawBackground() {
+            // Sky gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#98FB98');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Ground
+            ctx.fillStyle = '#8FBC8F';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // Decorative elements
+            drawClouds();
+            drawTrees();
+        }
+        
+        function drawClouds() {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            // Cloud 1
+            ctx.beginPath();
+            ctx.arc(100, 60, 20, 0, Math.PI * 2);
+            ctx.arc(120, 60, 25, 0, Math.PI * 2);
+            ctx.arc(140, 60, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cloud 2
+            ctx.beginPath();
+            ctx.arc(500, 40, 15, 0, Math.PI * 2);
+            ctx.arc(515, 40, 20, 0, Math.PI * 2);
+            ctx.arc(530, 40, 15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawTrees() {
+            // Tree 1
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(20, 200, 15, 40);
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(27, 200, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Tree 2
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(650, 250, 15, 40);
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(657, 250, 25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawPlots() {
+            gameState.plots.forEach(plot => {
+                // Draw soil
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
+                
+                // Draw border
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+                
+                // Draw crop if exists
+                if (plot.crop) {
+                    drawCrop(plot);
+                }
+                
+                // Draw watered effect
+                if (plot.watered && Date.now() - plot.lastWatered < 5000) {
+                    ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
+                    ctx.fillRect(plot.x, plot.y, plot.width, plot.height);
+                }
+            });
+        }
+        
+        function drawCrop(plot) {
+            const crop = plot.crop;
+            const centerX = plot.x + plot.width / 2;
+            const centerY = plot.y + plot.height / 2;
+            
+            if (plot.growthStage === 1) {
+                // Seedling
+                ctx.fillStyle = '#90EE90';
+                ctx.fillRect(centerX - 3, centerY - 5, 6, 10);
+            } else if (plot.growthStage === 2) {
+                // Growing
+                ctx.fillStyle = '#32CD32';
+                ctx.fillRect(centerX - 8, centerY - 15, 16, 20);
+                ctx.fillStyle = crop.color;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY - 10, 5, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (plot.growthStage === 3) {
+                // Mature
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(centerX - 10, centerY - 20, 20, 25);
+                ctx.fillStyle = crop.color;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY - 15, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Sparkle effect
+                ctx.fillStyle = '#FFD700';
+                ctx.font = '12px Arial';
+                ctx.fillText('✨', centerX - 15, centerY - 25);
+                ctx.fillText('✨', centerX + 10, centerY - 25);
+            }
+        }
+        
+        function drawAnimals() {
+            gameState.animals.forEach(animal => {
+                const happiness = animal.happiness;
+                let color = happiness > 70 ? '#90EE90' : happiness > 30 ? '#FFD700' : '#FFB6C1';
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(animal.x, animal.y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Animal emoji
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                let emoji = '🐄';
+                if (animal.type === 'chicken') emoji = '🐔';
+                else if (animal.type === 'pig') emoji = '🐷';
+                else if (animal.type === 'sheep') emoji = '🐑';
+                
+                ctx.fillText(emoji, animal.x, animal.y + 8);
+                
+                // Happiness indicator
+                if (happiness > 80) {
+                    ctx.fillText('💖', animal.x, animal.y - 30);
+                }
+            });
+        }
+        
+        function drawUI() {
+            // Tool indicator
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(10, 10, 200, 40);
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Selected: ${gameState.selectedTool}`, 20, 35);
+        }
+        
+        function handleClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (event.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (event.clientY - rect.top) * (canvas.height / rect.height);
+            
+            if (gameState.selectedTool === 'plant') {
+                plantSeed(x, y);
+            } else if (gameState.selectedTool === 'water') {
+                waterPlant(x, y);
+            } else if (gameState.selectedTool === 'harvest') {
+                harvestCrop(x, y);
+            } else if (gameState.selectedTool === 'animal') {
+                feedAnimal(x, y);
+            }
+        }
+        
+        function plantSeed(x, y) {
+            if (gameState.coins < 10) {
+                showParticle(x, y, '💸 Need more coins!', '#FF6B6B');
+                return;
+            }
+            
+            const plot = gameState.plots.find(p => 
+                x >= p.x && x <= p.x + p.width && 
+                y >= p.y && y <= p.y + p.height && 
+                !p.crop
+            );
+            
+            if (plot) {
+                const cropType = cropTypes[Math.floor(Math.random() * cropTypes.length)];
+                plot.crop = cropType;
+                plot.growthStage = 1;
+                plot.plantedTime = Date.now();
+                gameState.coins -= 10;
+                showParticle(x, y, '🌱 Planted!', '#90EE90');
+                updateUI();
+            }
+        }
+        
+        function waterPlant(x, y) {
+            const plot = gameState.plots.find(p => 
+                x >= p.x && x <= p.x + p.width && 
+                y >= p.y && y <= p.y + p.height && 
+                p.crop
+            );
+            
+            if (plot) {
+                plot.watered = true;
+                plot.lastWatered = Date.now();
+                showParticle(x, y, '💧 Watered!', '#4169E1');
+            }
+        }
+        
+        function harvestCrop(x, y) {
+            const plot = gameState.plots.find(p => 
+                x >= p.x && x <= p.x + p.width && 
+                y >= p.y && y <= p.y + p.height && 
+                p.crop && p.growthStage === 3
+            );
+            
+            if (plot) {
+                const value = plot.crop.value;
+                gameState.coins += value;
+                gameState.harvested++;
+                gameState.score += value * 2;
+                
+                showParticle(x, y, `+${value} coins!`, '#FFD700');
+                
+                plot.crop = null;
+                plot.growthStage = 0;
+                plot.watered = false;
+                
+                checkLevelUp();
+                updateUI();
+            }
+        }
+        
+        function feedAnimal(x, y) {
+            if (gameState.coins < 20) {
+                showParticle(x, y, '💸 Need more coins!', '#FF6B6B');
+                return;
+            }
+            
+            const animal = gameState.animals.find(a => 
+                Math.sqrt((x - a.x) ** 2 + (y - a.y) ** 2) < 30
+            );
+            
+            if (animal) {
+                animal.happiness = Math.min(100, animal.happiness + 30);
+                animal.lastFed = Date.now();
+                gameState.coins -= 20;
+                gameState.score += 50;
+                
+                showParticle(x, y, '💖 Happy!', '#FF69B4');
+                updateUI();
+            }
+        }
+        
+        function showParticle(x, y, text, color) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = text;
+            particle.style.color = color;
+            particle.style.left = (x + canvas.offsetLeft) + 'px';
+            particle.style.top = (y + canvas.offsetTop) + 'px';
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                document.body.removeChild(particle);
+            }, 2000);
+        }
+        
+        function updateCrops() {
+            gameState.plots.forEach(plot => {
+                if (plot.crop && plot.growthStage < 3) {
+                    const timeSincePlanted = Date.now() - plot.plantedTime;
+                    const growthTime = plot.crop.growthTime;
+                    const waterBonus = plot.watered ? 0.5 : 1;
+                    
+                    if (timeSincePlanted > growthTime * 0.3 * waterBonus && plot.growthStage === 1) {
+                        plot.growthStage = 2;
+                    } else if (timeSincePlanted > growthTime * 0.7 * waterBonus && plot.growthStage === 2) {
+                        plot.growthStage = 3;
+                    }
+                }
+            });
+        }
+        
+        function updateAnimals() {
+            gameState.animals.forEach(animal => {
+                // Decrease happiness over time
+                if (Date.now() - animal.lastFed > 30000) {
+                    animal.happiness = Math.max(0, animal.happiness - 0.1);
+                }
+            });
+        }
+        
+        function checkLevelUp() {
+            const newLevel = Math.floor(gameState.harvested / 10) + 1;
+            if (newLevel > gameState.level) {
+                gameState.level = newLevel;
+                gameState.coins += 50; // Level up bonus
+                showParticle(canvas.width / 2, canvas.height / 2, `Level ${newLevel}! +50 coins!`, '#FFD700');
+            }
+        }
+        
+        function updateUI() {
+            document.getElementById('coins').textContent = gameState.coins;
+            document.getElementById('harvested').textContent = gameState.harvested;
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('level').textContent = gameState.level;
+        }
+        
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawBackground();
+            drawPlots();
+            drawAnimals();
+            drawUI();
+            
+            updateCrops();
+            updateAnimals();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners
+        canvas.addEventListener('click', handleClick);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('click', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+        
+        // Initialize game
+        initializePlots();
+        updateUI();
+        gameLoop();
+        
+        // Auto-save game state
+        setInterval(() => {
+            localStorage.setItem('chibiGardenSave', JSON.stringify(gameState));
+        }, 10000);
+        
+        // Load saved game
+        const savedGame = localStorage.getItem('chibiGardenSave');
+        if (savedGame) {
+            const saved = JSON.parse(savedGame);
+            gameState = { ...gameState, ...saved };
+            updateUI();
+        }
+    </script>
+</body>
+</html>
+
