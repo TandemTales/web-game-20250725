@@ -198,6 +198,14 @@
         let movingPlatforms = [];
         let exit = null;
         
+        // Character image
+        let characterImage = new Image();
+        let imageLoaded = false;
+        characterImage.onload = function() {
+            imageLoaded = true;
+        };
+        characterImage.src = 'images/puzzle_robot_character.png';
+        
         // Input handling
         const keys = {};
         
@@ -496,16 +504,22 @@
             }
             
             // Draw player
-            ctx.fillStyle = player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Add player eyes
-            ctx.fillStyle = '#FFF';
-            ctx.fillRect(player.x + 5, player.y + 8, 6, 6);
-            ctx.fillRect(player.x + 19, player.y + 8, 6, 6);
-            ctx.fillStyle = '#000';
-            ctx.fillRect(player.x + 7, player.y + 10, 2, 2);
-            ctx.fillRect(player.x + 21, player.y + 10, 2, 2);
+            if (imageLoaded) {
+                // Draw the character image scaled to fit the player size
+                ctx.drawImage(characterImage, player.x, player.y, player.width, player.height);
+            } else {
+                // Fallback to original rectangle if image not loaded
+                ctx.fillStyle = player.color;
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+                
+                // Add player eyes
+                ctx.fillStyle = '#FFF';
+                ctx.fillRect(player.x + 5, player.y + 8, 6, 6);
+                ctx.fillRect(player.x + 19, player.y + 8, 6, 6);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(player.x + 7, player.y + 10, 2, 2);
+                ctx.fillRect(player.x + 21, player.y + 10, 2, 2);
+            }
             
             // Draw UI text
             if (gemsCollected < totalGems) {
