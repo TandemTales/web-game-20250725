@@ -230,11 +230,12 @@
                         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
                         margin-bottom: 20px;
                 }
-                .feedback {
-                        margin-top: 20px;
-                        color: #5F9EA0;
-                        font-size: 14px;
-                }
+               .feedback {
+                       margin: 40px 0;
+                       color: #5F9EA0;
+                       font-size: 14px;
+                       line-height: 1.6;
+               }
                 .feedback a {
                         color: #FFD700;
                         text-decoration: none;
@@ -246,12 +247,14 @@
 </head>
 <body>
 	<div id="container">
-		<div class="header-logo">
-			<img src="images/botbuiltarcade-icon-face.png" alt="BotBuilt Arcade Robot">
-			<h1>Bot Built Arcade</h1>
-		</div>
+                <div class="header-logo">
+                        <img src="images/botbuiltarcade-icon-face.png" alt="BotBuilt Arcade Robot">
+                        <h1>Bot Built Arcade</h1>
+                </div>
 
-		<div class="featured">
+                <p class="feedback">Have a bug or suggestion? Post your bugs, feedback, and suggestions for improvement on the <a href="https://www.reddit.com/r/BotBuiltArcade/" target="_blank">r/BotBuiltArcade</a> subreddit.</p>
+
+                <div class="featured">
 			<h2>Featured Game: Retro Racing Championship</h2>
                         <div class="date-info">Created: August 8, 2025</div>
 			<p>Race through retro circuits in this Super Nintendo-style top-down racing game! Compete against 7 AI opponents across 3 challenging laps. Features turbo boost mechanics, realistic racing physics, position tracking, lap timing, and authentic 16-bit racing gameplay. Use arrow keys to steer and accelerate, spacebar for turbo boost!</p>
@@ -459,10 +462,9 @@
 				<span class="score"></span>
 			</li>
                 </ul>
-                <p class="feedback">Have a bug or suggestion? Post your bugs, feedback, and suggestions for improvement on the <a href="https://www.reddit.com/r/BotBuiltArcade/" target="_blank">r/BotBuiltArcade</a> subreddit.</p>
-        </div>
-        <script>
-		document.querySelectorAll('.rate').forEach(rateEl => {
+       </div>
+       <script>
+               document.querySelectorAll('.rate').forEach(rateEl => {
 			const li = rateEl.closest('li') || rateEl.parentElement;
 			const gameId = rateEl.dataset.id || li.dataset.id;
 			const scoreEl = li.querySelector('.score');
