@@ -277,12 +277,12 @@
         // Initialize game plots (2x2 grid to match background art)
         function initializePlots() {
             gameState.plots = [];
-            // Coordinates carefully adjusted to match the soil plots in the background art
+            // Coordinates precisely adjusted to match the soil plots in the background art
             const plotPositions = [
-                { x: 260, y: 270, width: 160, height: 90 }, // Top left
-                { x: 440, y: 270, width: 160, height: 90 }, // Top right
-                { x: 260, y: 380, width: 160, height: 90 }, // Bottom left
-                { x: 440, y: 380, width: 160, height: 90 }  // Bottom right
+                { x: 270, y: 280, width: 140, height: 80 }, // Top left
+                { x: 430, y: 280, width: 140, height: 80 }, // Top right
+                { x: 270, y: 390, width: 140, height: 80 }, // Bottom left
+                { x: 430, y: 390, width: 140, height: 80 }  // Bottom right
             ];
             
             plotPositions.forEach(pos => {
@@ -397,6 +397,14 @@
             } else if (plot.growthStage === 3) {
                 // Mature - draw the actual vegetable from the art
                 if (images.vegetables && images.vegetables.complete) {
+                    // Save the current canvas state
+                    ctx.save();
+                    
+                    // Clip to the plot area to prevent bleeding
+                    ctx.beginPath();
+                    ctx.rect(plot.x, plot.y, plot.width, plot.height);
+                    ctx.clip();
+                    
                     // Vegetables are in a 3x2 grid layout
                     const spriteWidth = images.vegetables.width / 3; // 3 columns
                     const spriteHeight = images.vegetables.height / 2; // 2 rows
@@ -407,14 +415,18 @@
                     const sourceX = col * spriteWidth;
                     const sourceY = row * spriteHeight;
                     
-                    // Draw larger vegetables that fit well in the plot
-                    const vegSize = 60;
+                    // Make vegetable size relative to plot size but with reasonable limits
+                    const maxVegSize = Math.min(plot.width * 0.7, plot.height * 0.8);
+                    const vegSize = Math.min(maxVegSize, 50); // Cap at 50px to prevent oversizing
                     
                     ctx.drawImage(
                         images.vegetables,
                         sourceX, sourceY, spriteWidth, spriteHeight, // Source rectangle
                         centerX - vegSize/2, centerY - vegSize/2, vegSize, vegSize // Destination
                     );
+                    
+                    // Restore the canvas state (removes clipping)
+                    ctx.restore();
                 } else {
                     // Fallback to colored circle
                     ctx.fillStyle = '#FFD700';
